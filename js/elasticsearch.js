@@ -3,8 +3,7 @@
     'use strict';
 
     let util = new Util(),
-        urlElastic = 'https://vpc-es-sbsearch-qas-u4pht5gehqu3pmsc4x5srachwu.us-east-1.es.amazonaws.com',
-        alert = $('.alert-danger');
+        urlElastic = 'https://vpc-es-sbsearch-qas-u4pht5gehqu3pmsc4x5srachwu.us-east-1.es.amazonaws.com';
 
     function init() {
         listaIndices();
@@ -39,7 +38,7 @@
             util.cargando(false);
         }, (e) => {
             console.log(e);
-            alert.fadeIn('slow');
+            $('.alert-danger').fadeIn('slow');
             util.cargando(false);
         });
     }
