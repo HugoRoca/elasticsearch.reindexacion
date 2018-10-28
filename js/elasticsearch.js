@@ -3,10 +3,12 @@
     'use strict';
 
     let util = new Util(),
+        version = 'v1',
         urlElastic = 'https://vpc-es-sbsearch-qas-u4pht5gehqu3pmsc4x5srachwu.us-east-1.es.amazonaws.com';
 
     function init() {
         listaIndices();
+        
     }
 
     function llenaTabla(r) {
@@ -20,7 +22,7 @@
             tabla += `<td>${element.index}</td>`;
             tabla += `<td>${element["docs.count"]}</td>`;
             tabla += `<td class="text-right">${element["store.size"]}</td>`;
-            tabla += `<td><button class="btn btn-primary btn-sm">Reindexar</button></td>`;
+            tabla += `<td><button class="btn btn-primary btn-sm btn-reindex">Reindexar</button></td>`;
             tabla += '</tr>';
         }
     
@@ -41,6 +43,10 @@
             $('.alert-danger').fadeIn('slow');
             util.cargando(false);
         });
+    }
+
+    function ejecutarReindexacion(index){
+        
     }
 
     init();
