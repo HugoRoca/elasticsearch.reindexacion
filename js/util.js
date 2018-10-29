@@ -26,4 +26,21 @@ class Util {
             data: JSON.stringify(data)
         });
     }
+
+    putData(url, data){
+        return $.ajax({
+            url: url,
+            type: 'put',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(data)
+        });
+    }
+
+    deleteData(url){
+        return $.ajax({
+            url: url,
+            type: 'delete'
+        });
+    }
 }

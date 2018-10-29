@@ -199,3 +199,27 @@ const create_index = {
         }
     }
 };
+
+const data_reindex = ((index, reindex) => {
+    return {
+        "source": {
+            "index": index
+        },
+        "dest": {
+            "index": reindex
+        }
+    };
+});
+
+const data_alias = ((index, reindex) => {
+    return {
+        "actions": [
+            {
+                "add": {
+                    "alias": index,
+                    "index": reindex
+                }
+            }
+        ]
+    };
+});
