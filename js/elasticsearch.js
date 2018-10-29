@@ -21,6 +21,8 @@ function llenaTabla(r) {
     var i = 0;
     for (const key in r) {
         const element = r[key];
+        if (element.index.indexOf('v1') !== -1) continue;
+
         i += 1;
         tabla += '<tr>';
         tabla += `<td>${i}</td>`;
@@ -114,7 +116,7 @@ function Reindexar(index, showlog) {
                 }, (e) => {
                     error(e);
                 });
-            }, 40000);
+            }, 60000);
         })
 
     }, (e) => {
