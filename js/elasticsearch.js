@@ -13,7 +13,16 @@ function init() {
 function error(e) {
     console.log(e);
     $('.alert-danger').fadeIn('slow');
-    util.cargando(false);
+    //util.cargando(false);
+}
+
+function obtenerHora(){ 
+    momentoActual = new Date() 
+    hora = momentoActual.getHours() 
+    minuto = momentoActual.getMinutes() 
+    segundo = momentoActual.getSeconds() 
+
+    return hora + ":" + minuto + ":" + segundo;
 }
 
 function llenaTabla(r) {
@@ -59,12 +68,8 @@ function deleteIndex(index) {
     });
 }
 
-function aliasIndex(index, reindex) {
-
-}
-
 function Reindexar(index, showlog) {
-    util.cargando(true);
+    //util.cargando(true);
 
     let _index = index,
         new_index = _index.replace('producto', 'producto_v1'),
@@ -72,6 +77,7 @@ function Reindexar(index, showlog) {
 
     // Creación de indice
     util.putData(`${urlElastic}/${new_index}`, create_index).then((r) => {
+        log = 'Hora de inicio: ' + obtenerHora() + '<br>';
         log += `Creación de índice: ${new_index}<br>`;
         $(`.${showlog}`).html(log);
 
@@ -79,7 +85,6 @@ function Reindexar(index, showlog) {
 
         // Reindexación
         util.postData(`${urlElastic}/_reindex?wait_for_completion=false`, dataReindex).then((r) => {
-
             log += `Inicio de la reindexación...<br>`;
             $(`.${showlog}`).html(log);
 
@@ -92,6 +97,7 @@ function Reindexar(index, showlog) {
 
                     log += `Total Registros: ${r.task.status.total} | Total Procesados: ${r.task.status.created}<br>`;
                     $(`.${showlog}`).html(log);
+                    $('.alert-danger').fadeOut('slow');
 
                     if (r.completed && r.task.status.total == r.task.status.created) {
 
@@ -101,6 +107,7 @@ function Reindexar(index, showlog) {
 
                             util.postData(`${urlElastic}/_aliases`, data).then((r) => {
                                  clearInterval(time);
+                                 log += 'Hora Fin: ' + obtenerHora() + '<br>';
                                  log += `<br><span style="color: green">Finalizó</span>`;
                                  $(`.${showlog}`).html(log);
                                  util.cargando(false);
@@ -111,12 +118,11 @@ function Reindexar(index, showlog) {
                         }, (e) => {
                             error(e);
                         });
-
                     }
                 }, (e) => {
                     error(e);
                 });
-            }, 60000);
+            }, 30000);
         })
 
     }, (e) => {
