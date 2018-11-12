@@ -1,7 +1,7 @@
 'use strict';
 
 let util = new Util(),
-    urlElastic = 'https://vpc-es-sbsearch-qas-u4pht5gehqu3pmsc4x5srachwu.us-east-1.es.amazonaws.com';
+    urlElastic = 'https://vpc-es-sbsearch-ppr-rnioiss6o347c74q4w2u7w2uhu.us-east-1.es.amazonaws.com';
 
 var time = 0;
 
@@ -17,10 +17,10 @@ function error(e) {
 }
 
 function obtenerHora(){ 
-    momentoActual = new Date() 
-    hora = momentoActual.getHours() 
-    minuto = momentoActual.getMinutes() 
-    segundo = momentoActual.getSeconds() 
+    var momentoActual = new Date() 
+    var hora = momentoActual.getHours() 
+    var minuto = momentoActual.getMinutes() 
+    var segundo = momentoActual.getSeconds() 
 
     return hora + ":" + minuto + ":" + segundo;
 }
@@ -126,6 +126,9 @@ function Reindexar(index, showlog) {
         })
 
     }, (e) => {
+        
+        $(`.${showlog}`).html(`<span style="color: red"><b>${e.responseJSON.error.reason}</b></span>`);
+        console.log(e.responseJSON);
         error(e);
     });
 }
