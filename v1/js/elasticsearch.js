@@ -1,7 +1,7 @@
 'use strict';
 
 let util = new Util(),
-    urlElastic = 'https://vpc-es-sbsearch-ppr-rnioiss6o347c74q4w2u7w2uhu.us-east-1.es.amazonaws.com';
+    urlElastic = 'https://vpc-es-sbsearch-qa-6lqloaf2kfljixcaekbyqxu2aa.us-east-1.es.amazonaws.com';
 
 var time = 0;
 
@@ -30,7 +30,7 @@ function llenaTabla(r) {
     var i = 0;
     for (const key in r) {
         const element = r[key];
-        if (element.index.indexOf('v1') !== -1) continue;
+        //if (element.index.indexOf('v1') !== -1) continue;
 
         i += 1;
         tabla += '<tr>';
