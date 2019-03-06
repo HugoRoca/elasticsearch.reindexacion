@@ -21,24 +21,17 @@
         <div id="loader"></div>
     </div> -->
     <main class="container">
-        <h1 class="display-4 text-center">Table Filter</h1>
+        <h1 class="display-4 text-center">List of indexes</h1>
 
         <div class="panel panel-default">
             <div class="panel-body">
-                <div class="pull-right">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-success btn-filter" data-target="pagado">Pagado</button>
-                        <button type="button" class="btn btn-warning btn-filter"
-                            data-target="pendiente">Pendiente</button>
-                        <button type="button" class="btn btn-danger btn-filter"
-                            data-target="cancelado">Cancelado</button>
-                        <button type="button" class="btn btn-default btn-filter" data-target="all">Todos</button>
-                    </div>
-                </div>
                 <div class="table-container">
                     <table class="table table-filter">
                         <tbody>
                             <tr data-status="pagado">
+                                <td>
+                                    <button class="btn btn-primary">Reindexar</button>
+                                </td>
                                 <td>
                                     <a href="javascript:;" class="star">
                                         <i class="glyphicon glyphicon-star"></i>
@@ -63,6 +56,7 @@
                                 </td>
                             </tr>
                             <tr data-status="pendiente">
+                                <td></td>
                                 <td>
                                     <a href="javascript:;" class="star">
                                         <i class="glyphicon glyphicon-star"></i>
