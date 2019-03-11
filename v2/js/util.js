@@ -1,46 +1,47 @@
-'use strict';
+"use strict";
 
-class Util {
-
-    cargando(val) {
-        if (val) {
-            $('.cargaPantalla').fadeIn(500);
-        } else {
-            $('.cargaPantalla').fadeOut(500);
-        }
+function cargando(val) {
+    if (val) {
+        $(".cargaPantalla").fadeIn(500);
+    } else {
+        $(".cargaPantalla").fadeOut(500);
     }
+}
 
-    getData(url) {
-        return $.ajax({
-            url: url,
-            type: 'get'
-        });
-    }
+function mostarCargando(){
+    $(".cargando").hide();
+}
 
-    postData(url, data) {
-        return $.ajax({
-            url: url,
-            type: 'post',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(data)
-        });
-    }
+function getData(url) {
+    return $.ajax({
+        url: url,
+        type: "get"
+    });
+}
 
-    putData(url, data){
-        return $.ajax({
-            url: url,
-            type: 'put',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(data)
-        });
-    }
+function postData(url, data) {
+    return $.ajax({
+        url: url,
+        type: "post",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(data)
+    });
+}
 
-    deleteData(url){
-        return $.ajax({
-            url: url,
-            type: 'delete'
-        });
-    }
+function putData(url, data) {
+    return $.ajax({
+        url: url,
+        type: "put",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(data)
+    });
+}
+
+function deleteData(url) {
+    return $.ajax({
+        url: url,
+        type: "delete"
+    });
 }
