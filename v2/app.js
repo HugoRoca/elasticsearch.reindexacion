@@ -9,11 +9,13 @@ const app = (function () {
     }
 
     const _elementos = {
-        tabla: ".table-filter"
+        tabla: ".table-filter",
+        reindexarBoton: ".reindexar"
     }
 
     const _funciones = {
         inicializarEventos: function () {
+            $(document).on("click", _elementos.reindexarBoton, _eventos.reindexar);
             _funciones.listarInidices();
         },
 
@@ -34,7 +36,7 @@ const app = (function () {
             for (const key in data) {
                 const element = data[key];
                 i += 1;
-                tabla += `<tr id="${element.index}">`;
+                tabla += `<tr id="${element.index}" data-item="filaReindexación">`;
                 tabla += `<td><button class='btn btn-warning reindexar'>Reindexar</button></td>`;
                 tabla += `<td>
                         <a href="javascript:;" class="star">
@@ -44,6 +46,7 @@ const app = (function () {
                 tabla += `<td>
                         <div class="media">
                             <div class="media-body">
+                                <input data-item="id" type="hidden" value="${element.index}">
                                 <h3 class='title'>${element.index} 
                                     <span class="pull-right pendiente">(Pendiente)</span>
                                 </h3>
@@ -74,6 +77,21 @@ const app = (function () {
             }
 
             $(_elementos.tabla).html(tabla);
+        }
+    }
+
+    const _eventos = {
+        reindexar: function (e) {
+            e.preventDefault();
+
+            let padre = $(this).parents("[data-item='filaReindexación']").eq(0);
+            let index = $(padre).find("[data-item='id']").val();
+            let log = "#" + index + "_log";
+
+            $(log).html("<td colspan='6'><p><small>Probando</small></p></td>");
+
+            console.log(padre);
+            console.log(log);
         }
     }
 
