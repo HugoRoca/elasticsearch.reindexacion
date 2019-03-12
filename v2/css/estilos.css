@@ -48,7 +48,7 @@ body {
 
 .table-filter tbody tr td {
     padding: 10px;
-    vertical-align: middle;
+    vertical-align: middle !important;
     border-top-color: #eee;
 }
 
