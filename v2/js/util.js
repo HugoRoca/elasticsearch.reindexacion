@@ -45,3 +45,12 @@ function deleteData(url) {
         type: "delete"
     });
 }
+
+function obtenerHora(){ 
+    var momentoActual = new Date() 
+    var hora = momentoActual.getHours() 
+    var minuto = momentoActual.getMinutes() 
+    var segundo = momentoActual.getSeconds() 
+
+    return hora + ":" + minuto + ":" + segundo;
+}

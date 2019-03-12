@@ -3,6 +3,7 @@
 const app = (function () {
 
     var time = 0;
+    var cronometro = 0;
 
     const _config = {
         urlES: "https://vpc-es-sbsearch-qa-6lqloaf2kfljixcaekbyqxu2aa.us-east-1.es.amazonaws.com"
@@ -40,7 +41,7 @@ const app = (function () {
                 tabla += `<td><button class='btn btn-warning reindexar'>Reindexar</button></td>`;
                 tabla += `<td>
                         <a href="javascript:;" class="star">
-                            <img src='image/botonNaranja.png' class='media-photo' alt=''>
+                            <img src='image/botonNaranja.png' class='media-photo imagen-cambiar' alt=''>
                         </a>
                     </td>`;
                 tabla += `<td>
@@ -86,12 +87,16 @@ const app = (function () {
 
             let padre = $(this).parents("[data-item='filaReindexación']").eq(0);
             let index = $(padre).find("[data-item='id']").val();
+            let imagen = $(padre).find(".imagen-cambiar");
+
             let logId = "#" + index + "_log";
-            let log = "Inicio de la reindexación"
             let newIndex = index.replace("producto_v1", "producto_v2");
+            let log = `<strong>Hora de inicio ${obtenerHora()} → Creación de índice: ${newIndex}</strong><br>`;
+            $(logId).html(`<td colspan="6"><p><small>${log}</small></p></td>`);
+            imagen.attr("src", "image/cargando.gif");
 
             time = setInterval(() => {
-                log += `<br> Total Registros:`;
+                log += `Total Registros:`;
                 
                 let loghtml = `<td colspan="6"><p><small>${log}</small></p></td>`;
                 $(logId).html(loghtml);
