@@ -63,7 +63,7 @@ const app = (function () {
                 tabla += `<td>
                         <div class="media">
                             <div class="media-body">
-                                <h4 class="title">Registros: ${element["store.size"]}</h4>
+                                <h4 class="title">Peso: ${element["store.size"]}</h4>
                             </div>
                         </div>
                     </td>`;
@@ -86,12 +86,17 @@ const app = (function () {
 
             let padre = $(this).parents("[data-item='filaReindexación']").eq(0);
             let index = $(padre).find("[data-item='id']").val();
-            let log = "#" + index + "_log";
+            let logId = "#" + index + "_log";
+            let log = "Inicio de la reindexación"
+            let newIndex = index.replace("producto_v1", "producto_v2");
 
-            $(log).html("<td colspan='6'><p><small>Probando</small></p></td>");
-
-            console.log(padre);
-            console.log(log);
+            time = setInterval(() => {
+                log += `<br> Total Registros:`;
+                
+                let loghtml = `<td colspan="6"><p><small>${log}</small></p></td>`;
+                $(logId).html(loghtml);
+            }, 1000);
+            
         }
     }
 
