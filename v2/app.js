@@ -4,6 +4,7 @@ const app = (function () {
 
     var reindexar = 0;
     var cronometro = 0;
+    var h = 0, m = 0, s = 0;
 
     const _config = {
         urlES: "https://vpc-es-sbsearch-qa-6lqloaf2kfljixcaekbyqxu2aa.us-east-1.es.amazonaws.com"
@@ -88,8 +89,8 @@ const app = (function () {
     const _eventos = {
         reindexar: function (e) {
             e.preventDefault();
-            console.log("comenzo a reindexar");
-var i = 0;
+
+            var i = 0;
             let padre = $(this).parents("[data-item='filaReindexación']").eq(0);
             let index = $(padre).find("[data-item='id']").val();
             let logId = "#" + index + "_log";
@@ -106,7 +107,7 @@ var i = 0;
                 let loghtml = `<td colspan="6"><p><small>${log}</small></p></td>`;
                 $(logId).html(loghtml);
 
-                if (i === 5){
+                if (i === 5) {
                     clearInterval(reindexar);
                     _eventos.cambiosEstiloFin(padre);
                 }
@@ -130,7 +131,6 @@ var i = 0;
 
         cambiosEstiloFin: function (value) {
             let imagen = $(value).find(".imagen-cambiar");
-            let cronometro = $(value).find(".cronometro");
             let labelSmall = $(value).find(".label-small");
             let buttonReindexar = $(value).find(".reindexar");
 
