@@ -53,7 +53,7 @@ const app = (function () {
 
     const _funciones = {
         inicializarEventos: function () {
-            $(document).on("click", _elementos.reindexarBoton, _eventos.reindexar);
+            $(document).on("click", _elementos.reindexarBoton, _funciones.reindexar);
             _funciones.listarInidices();
         },
 
@@ -143,51 +143,89 @@ const app = (function () {
             horas = 0;
         },
 
-        reindexar: function (index, tr) {
-            _servicios.putData(`${_config.urlES}/${index}`, create_index).then((r) => {
-                
+        reindexar: function (e) {
+            e.preventDefault();
+
+            let tr = $(this).parents("[data-item='filaReindexación']").eq(0);
+            let index = $(tr).find("[data-item='id']").val();
+            let logId = "#" + index + "_log";
+            let newIndex = index.replace("producto_v1", "producto_v2");
+
+            let crometroText = $(tr).find(".cronometro");
+            cronometro = setInterval(() => { _funciones.cronometrar(crometroText); }, 1000);
+
+            _eventos.cambiosEstilosInicio(tr);
+
+            _servicios.putData(`${_config.urlES}/${newIndex}`, create_index).then((r) => {
+                let log = `Hora de inicio: <strong>${obtenerHora()}</strong> → Creación de índice: <strong>${newIndex}</strong><br>`;
+                _funciones.pintarLog(log, logId);
+
+                let dataReindex = data_reindex(index, newIndex);
+                _servicios.postData(`${_config.urlES}/_reindex?wait_for_completion=false`, dataReindex).then((r) => {
+                    log += `<i>Inicio de la reindexación...<i/><br>`;
+                    _funciones.pintarLog(log, logId);
+
+                    let task = r.task;
+
+                    log += `Consultando proceso: <strong>${task}</strong><br>`;
+
+                    reindexar = setInterval(() => {
+                        _servicios.getData(`${_config.urlES}/_tasks/${task}`).then((r) => {
+                            console.log("consulta de tareas", r);
+                            log += `Total registros: <strong>${r.task.status.total}</strong> → Total Procesados: <strong>${r.task.status.created}</strong><br>`;
+                            _funciones.pintarLog(log, logId);
+
+                            if (r.completed && r.task.status.total == r.task.status.created) {
+
+                                _servicios.deleteData(`${_config.urlES}/${index}`).then((r) => {
+
+                                    let data = data_alias(index, newIndex);
+
+                                    _servicios.postData(`${_config.urlES}/_aliases`, data).then((r) => {
+                                        clearInterval(reindexar);
+                                        log += 'Hora Fin: ' + obtenerHora() + '<br>';
+                                        log += `<br><span style="color: green">Finalizó</span>`;
+                                        _funciones.pintarLog(log, logId);
+                                        _eventos.cambiosEstiloFin(tr);
+                                        _funciones.pararCronometro();
+                                    }, (e) => {
+                                        console.log(e.responseJSON);
+                                        _eventos.cambiosEstiloError(tr);
+                                        clearInterval(reindexar);
+                                    });
+
+                                }, (e) => {
+                                    console.log(e.responseJSON);
+                                    _eventos.cambiosEstiloError(tr);
+                                    clearInterval(reindexar);
+                                });
+                            }
+
+                        }, (e) => {
+                            console.log(e.responseJSON);
+                            _eventos.cambiosEstiloError(tr);
+                            clearInterval(reindexar);
+                        });
+
+                    }, 10000);
+
+                }, (e) => {
+                    console.log(e.responseJSON);
+                    _eventos.cambiosEstiloError(tr);
+                });
+
             }, (e) => {
                 console.log(e.responseJSON);
                 _eventos.cambiosEstiloError(tr);
             })
+        },
+
+        pintarLog: function (logText, logId) {
+            $(logId).html(`<td colspan="6"><p style="font-size:15px;"><small>${logText}</small></p></td>`);
         }
     }
 
     const _eventos = {
-        reindexar: function (e) {
-            e.preventDefault();
-            var i = 0;
-            let padre = $(this).parents("[data-item='filaReindexación']").eq(0);
-            let index = $(padre).find("[data-item='id']").val();
-            let logId = "#" + index + "_log";
-            let newIndex = index.replace("producto_v1", "producto_v2");
-
-            let log = `<strong>Hora de inicio ${obtenerHora()} → Creación de índice: ${newIndex}</strong><br>`;
-            $(logId).html(`<td colspan="6"><p><small>${log}</small></p></td>`);
-
-            _eventos.cambiosEstilosInicio(padre);
-
-            let crometroText = $(padre).find(".cronometro");
-
-            cronometro = setInterval(() => { _funciones.cronometrar(crometroText); }, 1000);
-
-            reindexar = setInterval(() => {
-                log += `Total Registros:`;
-                i++;
-                let loghtml = `<td colspan="6"><p><small>${log}</small></p></td>`;
-                $(logId).html(loghtml);
-
-                if (i === 3) {
-
-                    clearInterval(reindexar);
-                    _funciones.pararCronometro();
-                    //_eventos.cambiosEstiloFin(padre);
-                    _funciones.reindexar(index, padre);
-                }
-            }, 1000);
-
-        },
-
         cambiosEstilosInicio: function (value) {
             let imagen = $(value).find(".imagen-cambiar");
             let cronometro = $(value).find(".cronometro");
@@ -226,6 +264,8 @@ const app = (function () {
             if (buttonReindexar.hasClass("btn-warning")) buttonReindexar.toggleClass("btn-warning btn-danger");
             buttonReindexar.prop("disabled", false);
             cronometro.fadeOut("slow");
+
+            _funciones.pararCronometro();
         }
     }
 
