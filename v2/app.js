@@ -171,8 +171,9 @@ const app = (function () {
 
                     reindexar = setInterval(() => {
                         _servicios.getData(`${_config.urlES}/_tasks/${task}`).then((r) => {
-                            console.log("consulta de tareas", r);
-                            log += `Total registros: <strong>${r.task.status.total}</strong> → Total Procesados: <strong>${r.task.status.created}</strong><br>`;
+                            
+                            let faltanProcesar = parseInt(r.task.status.total) - parseInt(r.task.status.created);
+                            log += `Total registros: <strong>${r.task.status.total}</strong> → Total Procesados: <strong>${r.task.status.created}</strong> → Faltan procesar: <strong>${faltanProcesar}</strong><br>`;
                             _funciones.pintarLog(log, logId);
 
                             if (r.completed && r.task.status.total == r.task.status.created) {
