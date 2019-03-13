@@ -8,49 +8,16 @@ function cargando(val) {
     }
 }
 
-function mostarCargando(){
+function mostarCargando() {
     $(".cargando").hide();
 }
 
-function getData(url) {
-    return $.ajax({
-        url: url,
-        type: "get"
-    });
-}
 
-function postData(url, data) {
-    return $.ajax({
-        url: url,
-        type: "post",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify(data)
-    });
-}
-
-function putData(url, data) {
-    return $.ajax({
-        url: url,
-        type: "put",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify(data)
-    });
-}
-
-function deleteData(url) {
-    return $.ajax({
-        url: url,
-        type: "delete"
-    });
-}
-
-function obtenerHora(){ 
-    var momentoActual = new Date() 
-    var hora = momentoActual.getHours() 
-    var minuto = momentoActual.getMinutes() 
-    var segundo = momentoActual.getSeconds() 
+function obtenerHora() {
+    var momentoActual = new Date()
+    var hora = momentoActual.getHours()
+    var minuto = momentoActual.getMinutes()
+    var segundo = momentoActual.getSeconds()
 
     return hora + ":" + minuto + ":" + segundo;
 }
