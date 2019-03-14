@@ -255,3 +255,21 @@ const data_alias = ((index, reindex) => {
         ]
     };
 });
+
+const settingsGet = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://pruebas-9ad8.restdb.io/rest/indexes",
+  "method": "GET",
+  "headers": {
+      "content-type": "application/json",
+      "x-apikey": "5c8a8b1fcac6621685acbf27",
+      "cache-control": "no-cache"
+  }
+};
+
+const settingsPost = ((json) => {
+  return{
+    
+  }
+});

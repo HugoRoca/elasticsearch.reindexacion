@@ -59,26 +59,49 @@ const app = (function () {
 
         listarInidices: function () {
             let url = `${_config.urlES}/_cat/indices/*?format=json&s=docs.count`;
-            _servicios.getData(url).then((r) => {
-                console.log(r);
-                _funciones.llenarTabla(r);
+            _servicios.getData(url).then((tabla) => {
+                console.log(tabla);
+
+                $.ajax(settingsGet).then((r) => {
+                    console.log("resultados", r);
+                    _funciones.llenarTabla(tabla, r);
+                }, (e) => {
+                    console.log(e);
+                    _funciones.llenarTabla(tabla);
+                });
+
             }, (e) => {
                 console.log("error: ", e);
             });
         },
 
-        llenarTabla: function (data) {
+        llenarTabla: function (data, r) {
             let tabla = "";
             let i = 0;
 
             for (const key in data) {
                 const element = data[key];
                 i += 1;
+
+                let label_small = "", imagen = "", duracion = "";
+                let indiceEnBase = r.find(x => x.id === element.index);
+
                 tabla += `<tr id="${element.index}" data-item="filaReindexación">`;
-                tabla += `<td><button class='btn btn-warning reindexar'>Reindexar</button></td>`;
+
+                if (element.index.indexOf("v2") >= 0) {
+                    tabla += `<td><button class='btn btn-success reindexar' disabled>Reindexado</button></td>`;
+                    label_small = `<span class="pull-right label-small pagado">(Reindexado)</span>`;
+                    imagen = "image/botonVerde.png";
+                    if (indiceEnBase !== undefined) duracion = "Tiempo: " + indiceEnBase.duracion;
+                } else {
+                    tabla += `<td><button class='btn btn-warning reindexar'>Reindexar</button></td>`;
+                    label_small = `<span class="pull-right label-small pendiente">(Pendiente)</span>`;
+                    imagen = "image/botonNaranja.png";
+                }
+
                 tabla += `<td style="vertical-align: middle">
                         <a href="javascript:;" class="star">
-                            <img src='image/botonNaranja.png' class='media-photo imagen-cambiar' alt=''>
+                            <img src='${imagen}' class='media-photo imagen-cambiar' alt=''>
                         </a>
                     </td>`;
                 tabla += `<td style="vertical-align: middle">
@@ -86,7 +109,7 @@ const app = (function () {
                             <div class="media-body">
                                 <input data-item="id" type="hidden" value="${element.index}">
                                 <h3 class='title'>${element.index} 
-                                    <span class="pull-right label-small pendiente">(Pendiente)</span>
+                                    ${label_small}
                                 </h3>
                             </div>
                         </div>
@@ -109,7 +132,7 @@ const app = (function () {
                 tabla += `<td style="vertical-align: middle">
                         <div class="media">
                             <div class="media-body">
-                                <h4 class="title cronometro"></h4>
+                                <h4 class="title cronometro" style="color:green; font-size:25px;">${duracion}</h4>
                             </div>
                         </div>
                     </td>`;
@@ -171,7 +194,7 @@ const app = (function () {
 
                     reindexar = setInterval(() => {
                         _servicios.getData(`${_config.urlES}/_tasks/${task}`).then((r) => {
-                            
+
                             let faltanProcesar = parseInt(r.task.status.total) - parseInt(r.task.status.created);
                             log += `Total registros: <strong>${r.task.status.total}</strong> → Total Procesados: <strong>${r.task.status.created}</strong> → Faltan procesar: <strong>${faltanProcesar}</strong><br>`;
                             _funciones.pintarLog(log, logId);
@@ -235,7 +258,6 @@ const app = (function () {
 
             imagen.attr("src", "image/cargando.gif");
             cronometro.html("Tiempo: 00:00:00");
-            cronometro.css({ "color": "green", "font-size": "25px" });
             labelSmall.html("(Reindexando...)");
             labelSmall.css("color", "green");
             buttonReindexar.prop("disabled", true);
