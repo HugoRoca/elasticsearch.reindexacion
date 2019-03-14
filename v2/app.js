@@ -5,6 +5,7 @@ const app = (function () {
     var reindexar = 0;
     var cronometro = 0;
     var horas = 0, minutos = 0, segundos = 0;
+    var tiempo = "";
 
     const _config = {
         urlES: "https://vpc-es-sbsearch-qa-6lqloaf2kfljixcaekbyqxu2aa.us-east-1.es.amazonaws.com"
@@ -92,7 +93,7 @@ const app = (function () {
                     tabla += `<td><button class='btn btn-success reindexar' disabled>Reindexado</button></td>`;
                     label_small = `<span class="pull-right label-small pagado">(Reindexado)</span>`;
                     imagen = "image/botonVerde.png";
-                    if (indiceEnBase !== undefined) duracion = "Tiempo: " + indiceEnBase.duracion;
+                    if (indiceEnBase !== undefined) duracion = indiceEnBase.duracion;
                 } else {
                     tabla += `<td><button class='btn btn-warning reindexar'>Reindexar</button></td>`;
                     label_small = `<span class="pull-right label-small pendiente">(Pendiente)</span>`;
@@ -138,7 +139,7 @@ const app = (function () {
                     </td>`;
                 tabla += "</tr>";
 
-                tabla += `<tr id="${element.index}_log"></tr>`
+                tabla += `<tr id="${element.index}_log" style"height: 250px; overflow: auto;"></tr>`
             }
 
             $(_elementos.tabla).html(tabla);
@@ -156,7 +157,9 @@ const app = (function () {
             xMinutos = (minutos < 10 ? "0" + minutos : minutos);
             xHoras = (horas < 10 ? "0" + horas : horas);
 
-            crometroText.html(`Tiempo: ${xHoras}:${xMinutos}:${xSegundos}`);
+            tiempo = `Tiempo: ${xHoras}:${xMinutos}:${xSegundos}`;
+
+            crometroText.html(tiempo);
         },
 
         pararCronometro: function () {
@@ -206,12 +209,23 @@ const app = (function () {
                                     let data = data_alias(index, newIndex);
 
                                     _servicios.postData(`${_config.urlES}/_aliases`, data).then((r) => {
-                                        clearInterval(reindexar);
-                                        log += 'Hora Fin: ' + obtenerHora() + '<br>';
-                                        log += `<br><span style="color: green">Finalizó</span>`;
-                                        _funciones.pintarLog(log, logId);
-                                        _eventos.cambiosEstiloFin(tr);
-                                        _funciones.pararCronometro();
+
+                                        let jsonR = {
+                                            "id": newIndex,
+                                            "descripcion": "Finalizo a las " + obtenerHora(),
+                                            "duracion": tiempo
+                                        };
+
+                                        $.ajax(settingsPost(jsonR)).then((data) => {
+                                            console.log("registro existo!", data);
+                                            clearInterval(reindexar);
+                                            log += 'Hora Fin: ' + obtenerHora() + '<br>';
+                                            log += `<br><span style="color: green">Finalizó</span>`;
+                                            _funciones.pintarLog(log, logId);
+                                            _eventos.cambiosEstiloFin(tr);
+                                            _funciones.pararCronometro();
+                                        });
+
                                     }, (e) => {
                                         console.log(e.responseJSON);
                                         _eventos.cambiosEstiloError(tr);
