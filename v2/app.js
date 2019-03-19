@@ -6,9 +6,10 @@ const app = (function () {
     var cronometro = 0;
     var horas = 0, minutos = 0, segundos = 0;
     var tiempo = "";
+    var dataLocalStorage = [];
 
     const _config = {
-        urlES: "https://vpc-es-sbsearch-qa-6lqloaf2kfljixcaekbyqxu2aa.us-east-1.es.amazonaws.com"
+        urlES: "https://vpc-es-sbsearch-ppr-rnioiss6o347c74q4w2u7w2uhu.us-east-1.es.amazonaws.com"
     }
 
     const _elementos = {
@@ -59,20 +60,16 @@ const app = (function () {
         },
 
         listarInidices: function () {
+            cargando(true);
             let url = `${_config.urlES}/_cat/indices/*?format=json&s=docs.count`;
             _servicios.getData(url).then((tabla) => {
-                console.log(tabla);
 
-                $.ajax(settingsGet).then((r) => {
-                    console.log("resultados", r);
-                    _funciones.llenarTabla(tabla, r);
-                }, (e) => {
-                    console.log(e);
-                    _funciones.llenarTabla(tabla);
-                });
+                _funciones.llenarTabla(tabla);
+                cargando(false);
 
             }, (e) => {
                 console.log("error: ", e);
+                cargando(false);
             });
         },
 
@@ -85,15 +82,17 @@ const app = (function () {
                 i += 1;
 
                 let label_small = "", imagen = "", duracion = "";
-                let indiceEnBase = r.find(x => x.id === element.index);
-
+                let baseIndices = get_local_storage("dataIndices");
+                dataLocalStorage = baseIndices === null ? [] : baseIndices;
+                let indiceEnBase = dataLocalStorage.find(x => x.id === element.index);
+              
                 tabla += `<tr id="${element.index}" data-item="filaReindexación">`;
 
-                if (element.index.indexOf("v2") >= 0) {
+                if (dataLocalStorage && indiceEnBase !== undefined) {
                     tabla += `<td><button class='btn btn-success reindexar' disabled>Reindexado</button></td>`;
                     label_small = `<span class="pull-right label-small pagado">(Reindexado)</span>`;
                     imagen = "image/botonVerde.png";
-                    if (indiceEnBase !== undefined) duracion = indiceEnBase.duracion;
+                    duracion = indiceEnBase.duracion;
                 } else {
                     tabla += `<td><button class='btn btn-warning reindexar'>Reindexar</button></td>`;
                     label_small = `<span class="pull-right label-small pendiente">(Pendiente)</span>`;
@@ -139,7 +138,7 @@ const app = (function () {
                     </td>`;
                 tabla += "</tr>";
 
-                tabla += `<tr id="${element.index}_log" style"height: 250px; overflow: auto;"></tr>`
+                tabla += `<tr id="${element.index}_log"></tr>`
             }
 
             $(_elementos.tabla).html(tabla);
@@ -210,22 +209,20 @@ const app = (function () {
 
                                     _servicios.postData(`${_config.urlES}/_aliases`, data).then((r) => {
 
-                                        let jsonR = {
+                                        dataLocalStorage.push({
                                             "id": newIndex,
                                             "descripcion": "Finalizo a las " + obtenerHora(),
                                             "duracion": tiempo
-                                        };
-
-                                        $.ajax(settingsPost(jsonR)).then((data) => {
-                                            console.log("registro existo!", data);
-                                            clearInterval(reindexar);
-                                            log += 'Hora Fin: ' + obtenerHora() + '<br>';
-                                            log += `<br><span style="color: green">Finalizó</span>`;
-                                            _funciones.pintarLog(log, logId);
-                                            _eventos.cambiosEstiloFin(tr);
-                                            _funciones.pararCronometro();
                                         });
 
+                                        set_local_storage(dataLocalStorage, "dataIndices");
+                                        
+                                        clearInterval(reindexar);
+                                        log += 'Hora Fin: ' + obtenerHora() + '<br>';
+                                        log += `<br><span style="color: green">Finalizó</span>`;
+                                        _funciones.pintarLog(log, logId);
+                                        _eventos.cambiosEstiloFin(tr);
+                                        _funciones.pararCronometro();
                                     }, (e) => {
                                         console.log(e.responseJSON);
                                         _eventos.cambiosEstiloError(tr);
@@ -245,7 +242,7 @@ const app = (function () {
                             clearInterval(reindexar);
                         });
 
-                    }, 10000);
+                    }, 60000);
 
                 }, (e) => {
                     console.log(e.responseJSON);
@@ -259,7 +256,7 @@ const app = (function () {
         },
 
         pintarLog: function (logText, logId) {
-            $(logId).html(`<td colspan="6"><p style="font-size:15px;"><small>${logText}</small></p></td>`);
+            $(logId).html(`<td colspan="6"><div style="height: 200px;display: block;width: 100%;overflow: auto;"><p style="font-size:15px;"><small>${logText}</small></p></div></td>`);
         }
     }
 

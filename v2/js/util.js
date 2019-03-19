@@ -21,3 +21,14 @@ function obtenerHora() {
 
     return hora + ":" + minuto + ":" + segundo;
 }
+
+function set_local_storage(data, key) {
+    var value = JSON.stringify(data);
+    localStorage.setItem(key, value);
+}
+
+function get_local_storage(key) {
+    var value = localStorage.getItem(key);
+    value = JSON.parse(value);
+    return value;
+}
