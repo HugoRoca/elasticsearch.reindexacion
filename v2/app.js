@@ -210,7 +210,7 @@ const app = (function () {
                                     _servicios.postData(`${_config.urlES}/_aliases`, data).then((r) => {
 
                                         dataLocalStorage.push({
-                                            "id": newIndex,
+                                            "id": index,
                                             "descripcion": "Finalizo a las " + obtenerHora(),
                                             "duracion": tiempo
                                         });
