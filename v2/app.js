@@ -85,7 +85,7 @@ const app = (function () {
                 let baseIndices = get_local_storage("dataIndices");
                 dataLocalStorage = baseIndices === null ? [] : baseIndices;
                 let indiceEnBase = dataLocalStorage.find(x => x.id === element.index);
-              
+
                 tabla += `<tr id="${element.index}" data-item="filaReindexación">`;
 
                 if (dataLocalStorage && indiceEnBase !== undefined) {
@@ -94,9 +94,16 @@ const app = (function () {
                     imagen = "image/botonVerde.png";
                     duracion = indiceEnBase.duracion;
                 } else {
-                    tabla += `<td><button class='btn btn-warning reindexar'>Reindexar</button></td>`;
-                    label_small = `<span class="pull-right label-small pendiente">(Pendiente)</span>`;
-                    imagen = "image/botonNaranja.png";
+                    if (element.index.indexOf("v2") >= 0) {
+                        tabla += `<td><button class='btn btn-success reindexar' disabled>Reindexado</button></td>`;
+                        label_small = `<span class="pull-right label-small pagado">(Reindexado)</span>`;
+                        imagen = "image/botonVerde.png";
+                    } else {
+                        tabla += `<td><button class='btn btn-warning reindexar'>Reindexar</button></td>`;
+                        label_small = `<span class="pull-right label-small pendiente">(Pendiente)</span>`;
+                        imagen = "image/botonNaranja.png";
+                    }
+
                 }
 
                 tabla += `<td style="vertical-align: middle">
@@ -216,7 +223,7 @@ const app = (function () {
                                         });
 
                                         set_local_storage(dataLocalStorage, "dataIndices");
-                                        
+
                                         clearInterval(reindexar);
                                         log += 'Hora Fin: ' + obtenerHora() + '<br>';
                                         log += `<br><span style="color: green">Finalizó</span>`;
