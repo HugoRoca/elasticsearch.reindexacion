@@ -77,13 +77,15 @@ const app = (function () {
             let tabla = "";
             let i = 0;
 
+            let baseIndices = get_local_storage("dataIndices");
+            dataLocalStorage = baseIndices === null ? [] : baseIndices;
+            console.log("baseIndices", dataLocalStorage);
+
             for (const key in data) {
                 const element = data[key];
                 i += 1;
 
                 let label_small = "", imagen = "", duracion = "";
-                let baseIndices = get_local_storage("dataIndices");
-                dataLocalStorage = baseIndices === null ? [] : baseIndices;
                 let indiceEnBase = dataLocalStorage.find(x => x.id === element.index);
 
                 tabla += `<tr id="${element.index}" data-item="filaReindexación">`;
@@ -93,6 +95,7 @@ const app = (function () {
                     label_small = `<span class="pull-right label-small pagado">(Reindexado)</span>`;
                     imagen = "image/botonVerde.png";
                     duracion = indiceEnBase.duracion;
+                    console.log("indiceEnBase", indiceEnBase);
                 } else {
                     if (element.index.indexOf("v2") >= 0) {
                         tabla += `<td><button class='btn btn-success reindexar' disabled>Reindexado</button></td>`;
@@ -217,7 +220,7 @@ const app = (function () {
                                     _servicios.postData(`${_config.urlES}/_aliases`, data).then((r) => {
 
                                         dataLocalStorage.push({
-                                            "id": index,
+                                            "id": newIndex,
                                             "descripcion": "Finalizo a las " + obtenerHora(),
                                             "duracion": tiempo
                                         });
